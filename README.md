@@ -90,7 +90,8 @@ O desenvolvimento deste projeto foi conduzido utilizando o **[Antigravity CLI (`
   ```powershell
   irm https://antigravity.google/cli/install.ps1 | iex
   ```
-  ```CMD
+- ** Windows (CMD):**
+   ```CMD
   curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd && del install.cmd
   ```
 
@@ -165,7 +166,7 @@ GEMINI_API_KEY=sua_chave_do_ai_studio_aqui
 MODEL=gemini-3.5-flash
 ```
 
-> **Nota:** É possível utilizar outro modelo como `gemini-3.8-flash` ou outro modelo da sua preferência. O 	[![OpenRouter](https://img.shields.io/badge/OpenRouter-94A3B8?logo=openrouter&logoColor=fff)](https://openrouter.ai/) oferece vários modelos gratuitos para você utilizar. Caso sua cota ou a demanda nos servidores do AI Studio retorne status 503, você pode alternar livremente o modelo na variável `MODEL`.
+> **Nota:** É possível utilizar outro modelo como `gemini-3.8-flash` ou outro modelo da sua preferência. O `OpenRouter` [![OpenRouter](https://img.shields.io/badge/OpenRouter-94A3B8?logo=openrouter&logoColor=fff)](https://openrouter.ai/) oferece vários modelos gratuitos para você utilizar. Caso sua cota ou a demanda nos servidores do AI Studio retorne status 503, você pode alternar livremente o modelo na variável `MODEL`.
 
 ### 4. Sincronizar dependências
 ```bash
