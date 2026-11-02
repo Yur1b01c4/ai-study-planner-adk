@@ -1,221 +1,237 @@
-# 🧠 Imersão Dev Engenharia de Software na Era da IA: Agente de Estudos com Antigravity CLI + Google ADK
+# 🎓 StudyMentor AI — Agente Especialista em Planos de Estudo com Google ADK
 
-Neste lab você vai usar o **Antigravity CLI (`agy`)** para criar, com o **Google ADK**, um agente especialista em estudos. O agente usa a skill [`plano-de-estudos`](skills/plano-de-estudos/SKILL.md): você diz o que quer aprender e até quando, e ele monta um plano de estudos e salva um arquivo CSV para importar no Google Agenda, usando o [EnvironmentToolset](https://adk.dev/integrations/environment-toolset/) do ADK.
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![Google ADK](https://img.shields.io/badge/Google%20ADK-2.x-4285F4?logo=google&logoColor=white)](https://adk.dev/)
+[![Gemini](https://img.shields.io/badge/Gemini%20API-Google%20AI%20Studio-8E75C2?logo=googlegemini&logoColor=white)](https://aistudio.google.com/)
+[![UV](https://img.shields.io/badge/Package%20Manager-uv-DE5FE9?logo=astral&logoColor=white)](https://docs.astral.sh/uv/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## Pré-requisitos
-
-- Conta Google com um projeto do Google Cloud com faturamento ativo (os créditos do [free trial](https://cloud.google.com/free) servem)
-- Chave de API do Google AI Studio, criada em [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
-- Conta no GitHub
-
----
-
-# Aula 3: Introdução ao Antigravity CLI
-
-## 1. Preparar o Cloud Shell
-
-Abra o [Console do Google Cloud](https://console.cloud.google.com/), selecione o seu projeto e clique em **Ativar o Cloud Shell** (ícone `>_`). Depois rode:
-
-```bash
-export PROJECT_ID=$(gcloud config get-value project)
-echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ~/.bashrc
-
-# Habilita a Agent Platform (acesso aos modelos usados pelo agy)
-gcloud services enable aiplatform.googleapis.com cloudaicompanion.googleapis.com
-
-git clone https://github.com/johngarrido/alura-imersao-dev-agy.git ~/alura-imersao-dev
-cd ~/alura-imersao-dev
-```
-
-> Se o Cloud Shell não abrir no projeto certo, rode `gcloud config set project SEU_PROJECT_ID` antes.
-
-## 2. Instalar e configurar o `agy`
-
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-curl -fsSL https://antigravity.google/cli/install.sh | bash
-source ~/.bashrc
-```
-
-Para iniciar o Antigravity CLI, utilize o comando:
-
-```bash
-agy
-```
-
-No setup do `agy`, escolha:
-
-1. `Use a Google Cloud project` → `Continue with Google Cloud`
-2. Abra o link, autorize com a sua conta e cole o código no terminal
-3. Cole o ID do projeto (`echo $PROJECT_ID`)
-4. Location: `global` · License: `Agent Platform`
-5. Aceite os termos e confirme `Yes, I trust this folder`
-
-> Dica: no Cloud Shell, use `CTRL+SHIFT+V` para colar. O `CTRL+C` encerra o programa.
-
-## 3. Primeiros passos no `agy`
-
-Teste alguns comandos e prompts:
-
-```text
-/help
-```
-
-```text
-Leia skills/plano-de-estudos/SKILL.md e me explique o que essa skill faz.
-```
-
-Saia com `/exit`.
-
-## 4. Instalar o agents-cli
-
-```bash
-uvx google-agents-cli setup
-agy
-```
-
-No `agy`:
-
-1. Rode `/skills` e confira se aparecem as skills `google-agents-cli-*`.
-2. Rode `/config` e mude **Tool Permission** para `always-proceed`.
-
-## 5. Criar o agente com `/grill-me`
-
-```text
-/grill-me
-```
-
-O `agy` vai te entrevistar sobre o agente. Use estas respostas como base:
-
-- **Objetivo:** um mentor de estudos que monta planos personalizados, com revisão espaçada e uma agenda em CSV para o Google Agenda.
-- **Skills:** usar ADK Skills ([adk.dev/skills](https://adk.dev/skills/)) com a skill `skills/plano-de-estudos`.
-- **Comportamento:** se faltar objetivo, prazo, disponibilidade ou nível, o agente pergunta antes de montar o plano.
-- **Arquivos:** o agente salva a agenda em `plano-de-estudos.csv` usando o [EnvironmentToolset](https://adk.dev/integrations/environment-toolset/), sem acesso ao shell.
-- **Execução:** local, no ADK Web, com API Key do Google AI Studio. Sem deploy.
-
-Depois peça a criação do projeto:
-
-```text
-Crie um agente ADK chamado agente-estudos seguindo as convenções do agents-cli e a especificação de ADK Skills. Copie a skill skills/plano-de-estudos para agente-estudos/app/skills/ e carregue-a com SkillToolset. Adicione o EnvironmentToolset com um LocalEnvironment na pasta agente-estudos/planos/, expondo só as ferramentas ReadFile e WriteFile, para o agente salvar o CSV. O modelo vem da variável MODEL e a instrução do agente deve incluir a data de hoje. Sem configuração de deploy.
-```
-
-Saia com `/exit`.
+> **Proof of Concept (PoC)** desenvolvida durante a **Imersão Engenharia de Software: Dev na Era da IA** da [Alura](https://www.alura.com.br/).  
+> Um agente inteligente autônomo baseado em **Google ADK** (Agent Development Kit) e arquitetura orientada a **Agent Skills**, capaz de coletar objetivos de aprendizado, calcular cronogramas com técnicas de revisão espaçada e gerar agendas prontas para importação direta no **Google Agenda (CSV)**.
 
 ---
 
-# Aula 4: Engenharia de software com IA e CLI
+## Contexto e Jornada de Aprendizado
 
-## 6. Configurar a API Key
+Durante a imersão de 3 aulas intensivas, o foco foi vivenciar a transição de um desenvolvedor tradicional para um **Engenheiro de Software que orquestra ferramentas de IA de ponta a ponta**:
 
-Configure o agente com a sua chave do AI Studio (ela não aparece na tela):
+1. **Ideação e Prototipagem no Google AI Studio:**
+   - Estruturação do comportamento do modelo, parametrização e definição da persona do mentor pedagógico.
+2. **Pair Programming com Antigravity CLI (`agy`):**
+   - Utilização do `agy` para conduzir o ciclo de vida de desenvolvimento em conjunto com a IA, utilizando comandos como `/grill-me` para alinhar requisitos de arquitetura antes de escrever código.
+3. **Google ADK (Agent Development Kit) & `agents-cli`:**
+   - Construção de agentes seguindo convenções corporativas oficiais da Google, com separação de responsabilidades, scaffolding automatizado e interfaces de desenvolvimento local via ADK Web.
+4. **Agent Skills & Divulgação Progressiva:**
+   - Implementação de habilidades modulares (`SKILL.md`) que ensinam ao agente *como* agir por meio de regras de ativação (*gating*) e carregamento sob demanda de referências e templates (L1, L2 e L3).
 
+---
+
+## Funcionalidades
+
+- **Regra de Gating Inteligente:** Se o usuário não informar os 4 pilares essenciais (**Objetivo**, **Prazo**, **Disponibilidade** e **Nível Atual**), o agente interrompe a execução de ferramentas complexas e faz uma pergunta pontual solicitando apenas o que falta.
+- **Pedagogia com Revisão Espaçada:** Distribui os tópicos de estudo aplicando espaçamento temporal e revisões intercaladas para maximizar a retenção.
+- **Checkpoints Semanais:** Inclui metas de autoavaliação e entregáveis concretos (exercícios, resumos, mini-projetos) para cada sessão.
+- **Exportação para Google Agenda:** Gera automaticamente o arquivo `plano-de-estudos.csv` compatível com o formato nativo de importação do Google Calendar.
+- **Capacidade de Replanejamento:** Ajusta dinamicamente as sessões em caso de imprevistos ou faltas sem sobrecarregar um único dia.
+
+---
+
+## Arquitetura e Boas Práticas
+
+```mermaid
+flowchart TD
+    User([Usuário]) -->|Mensagem| ADK[ADK Web / Runner]
+    ADK --> Agent[Root Agent: agente_estudos]
+    
+    subgraph "Camada de Instrução & Contexto"
+        InstructionProvider[Instruction Provider] -->|Injeta Data Atual| Agent
+        Agent --> GatingRule{Gating: Tem objetivo, prazo, disponibilidade e nível?}
+    end
+    
+    subgraph "Skills (Divulgação Progressiva)"
+        GatingRule -->|Faltam dados| AskUser[Pergunta só o que falta]
+        GatingRule -->|Tudo completo| SkillToolset[SkillToolset: plano-de-estudos]
+        SkillToolset --> L3Resources[Workflow / Técnicas / Templates L3]
+    end
+    
+    subgraph "Ferramentas & Segurança"
+        L3Resources --> FileToolset[FerramentasDeArquivo: EnvironmentToolset]
+        FileToolset -->|Somente WriteFile e ReadFile| PlanosDir[(agente-estudos/planos/)]
+        PlanosDir --> CSVFile[plano-de-estudos.csv]
+    end
+```
+
+### Destaques Técnicos:
+- **Segurança Sandbox (`FerramentasDeArquivo`):** O agente utiliza o `EnvironmentToolset` restrito estritamente às operações de leitura e gravação de arquivos na pasta isolada `planos/`, sem conceder qualquer permissão de execução de shell/terminal ao LLM.
+- **Injeção Dinâmica de Tempo:** A instrução do agente calcula em tempo de execução a data e o dia da semana atual (`InstructionProvider`), permitindo compreender expressões como *"começo na próxima quarta-feira"*.
+- **Divulgação Progressiva (L1/L2/L3):** O prompt inicial carrega apenas os metadados da skill. Detalhes de templates e metodologias são lidos pelo agente sob demanda via ferramentas dedicadas (`load_skill_resource`), economizando tokens e evitando alucinações.
+- **Zero Secrets no Versionamento:** Nenhuma chave de API ou dado de usuário na pasta `planos/` é versionado no Git (`.gitignore` estrito).
+
+---
+
+## Tecnologias Utilizadas
+
+- **Linguagem:** Python 3.11+
+- **Framework de Agentes:** [Google ADK](https://adk.dev/) (`google-adk`)
+- **Modelos de Linguagem:** Google Gemini via [Google AI Studio](https://aistudio.google.com/) (`gemini-3.5-flash` / `gemini-3.8-flash`)
+- **Gerenciador de Pacotes e Ambientes:** [uv](https://astral.sh/uv) (Astral)
+- **Scaffolding e Governança:** `google-agents-cli`
+- **Ambiente de Pair Programming:** Antigravity CLI (`agy`)
+
+---
+
+## Antigravity CLI (`agy`) — Ambiente de Pair Programming
+
+O desenvolvimento deste projeto foi conduzido utilizando o **[Antigravity CLI (`agy`)](https://antigravity.google/)**, o assistente oficial de desenvolvimento em terminal da Google DeepMind. O `agy` atua diretamente no workspace do projeto, executando comandos, realizando scaffolding, gerando testes e conduzindo o pair programming interativo orientado a **Agent Skills**.
+
+### 1. Instalação no Terminal
+
+- **Windows (PowerShell):**
+  ```powershell
+  irm https://antigravity.google/cli/install.ps1 | iex
+  ```
+  ```CMD
+  curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd && del install.cmd
+  ```
+
+- **Linux / macOS / Cloud Shell (Bash/Zsh):**
+  ```bash
+  curl -fsSL https://antigravity.google/cli/install.sh | bash
+  ```
+
+> **Dica pós-instalação:** Feche e reabra o terminal para que o comando `agy` fique disponível globalmente no seu `PATH`.
+
+---
+
+### 2. Comandos Essenciais para o Terminal
+
+| Objetivo | Comando | Descrição |
+|---|---|---|
+| **Iniciar nova sessão** | `agy` | Abre uma nova sessão interativa no diretório atual. |
+| **Continuar conversa anterior** *(se fechou sem querer)* | `agy -c`<br>*(ou `agy --continue`)* | Retoma imediatamente o contexto exato da última conversa aberta. |
+| **Visualizar conversas anteriores** | `/resume (conversation)` | Lista todas as conversas anteriores. |
+| **Retomar uma sessão específica** | `agy --conversation <ID>` | Reabre uma conversa anterior específica utilizando o ID da sessão. |
+| **Atualizar o CLI** | `agy update` | Atualiza o Antigravity CLI para a versão mais recente. |
+
+---
+
+### 3. Como Encontrar e Escolher Conversas Anteriores
+
+Todas as conversas, sessões e históricos ficam armazenados localmente no diretório de dados do usuário:
+
+- **Windows:** `%USERPROFILE%\.gemini\antigravity-cli\brain\`
+- **Linux/macOS:** `~/.gemini/antigravity-cli/brain/`
+
+Cada subpasta dentro de `brain/` possui o identificador único (UUID) da conversa e contém:
+- `logs/transcript.jsonl`: Histórico completo de perguntas, respostas e chamadas de ferramentas.
+- Arquivos de rascunho (*scratchpads*) e artefatos produzidos durante a sessão.
+
+Para retomar qualquer uma dessas sessões, basta copiar o identificador da pasta (UUID) e executar:
+```powershell
+agy --conversation <UUID_DA_CONVERSA>
+```
+
+---
+
+### 4. Comandos Úteis Dentro da Sessão do `agy`
+
+- `/grill-me` — Inicia uma entrevista técnica guiada com a IA para debulhar requisitos de arquitetura antes de gerar código.
+- `/skills` — Lista todas as habilidades (*skills*) disponíveis no agente de desenvolvimento.
+- `/config` — Abre o painel de configurações para definir permissões de ferramentas (ex.: `always-proceed`).
+- `/help` — Exibe a lista completa de comandos rápidos disponíveis.
+- `/exit` ou `/quit` *(ou pressionar `Ctrl+D` duas vezes)* — Encerra a sessão gravando o histórico com segurança.
+
+---
+
+## Como Executar o Projeto
+
+### 1. Pré-requisitos
+- Python 3.11 ou superior
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) instalado
+- Chave de API do [Google AI Studio](https://aistudio.google.com/apikey)
+
+### 2. Clonar o repositório
 ```bash
-cd ~/alura-imersao-dev/agente-estudos
-read -s -p "Cole sua API Key: " KEY && echo
+git clone https://github.com/Yur1b01c4/ai-study-planner-adk.git
+cd ai-study-planner-adk/agente-estudos
+```
 
-cat << EOF > .env
+### 3. Configurar as variáveis de ambiente
+Crie um arquivo `.env` dentro da pasta `agente-estudos/`:
+
+```env
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
-GEMINI_API_KEY=${KEY}
-MODEL=gemini-3.8-flash
-EOF
+GEMINI_API_KEY=sua_chave_do_ai_studio_aqui
+MODEL=gemini-3.5-flash
+```
 
+> **Nota:** É possível utilizar outro modelo como `gemini-3.8-flash` ou outro modelo da sua preferência. O 	[![OpenRouter](https://img.shields.io/badge/OpenRouter-94A3B8?logo=openrouter&logoColor=fff)](https://openrouter.ai/) oferece vários modelos gratuitos para você utilizar. Caso sua cota ou a demanda nos servidores do AI Studio retorne status 503, você pode alternar livremente o modelo na variável `MODEL`.
+
+### 4. Sincronizar dependências
+```bash
 uv sync
 ```
 
-## 7. Testar no ADK Web
-
+### 5. Iniciar a interface Web (ADK Web)
 ```bash
 uv run adk web --allow_origins="*"
 ```
 
-Clique no link `http://127.0.0.1:8000` que aparece no terminal e escolha o agente `app`. Teste:
+Abra seu navegador em `http://127.0.0.1:8000` e selecione o agente **`app`**.
 
-1. **Pedido incompleto:** o agente deve fazer perguntas antes de montar o plano.
-    ```text
-    Quero organizar meus estudos de JavaScript.
-    ```
-2. **Pedido completo:** o agente deve entregar o plano e chamar a ferramenta `WriteFile` para salvar o CSV.
-    ```text
-    Quero aprender JavaScript para fazer meu primeiro projeto de portfólio em 5 semanas. Começo segunda que vem. Posso estudar segunda, quarta e sexta, 2h por dia às 19h. Já sei HTML e CSS, mas nunca programei.
-    ```
-3. **Ajuste:** o agente deve reorganizar o plano e sobrescrever o CSV.
-    ```text
-    Perdi as sessões de quarta e sexta da primeira semana. Ajusta o plano?
-    ```
+---
 
-No ADK Web, clique nos eventos `WriteFile` para ver os argumentos e a resposta da ferramenta. Depois confira o arquivo numa segunda aba do Cloud Shell:
+## Casos de Uso e Testes
+
+### Cenário 1: Pedido Incompleto (Validação do Gating)
+**Mensagem enviada:**
+```text
+Quero organizar meus estudos de JavaScript.
+```
+**Comportamento esperado:** O agente responde solicitando pontualmente:
+1. Objetivo específico
+2. Prazo e data de início
+3. Disponibilidade semanal e horários
+4. Nível atual de conhecimento
+
+### Cenário 2: Pedido Completo (Geração do Cronograma e Arquivo)
+**Mensagem enviada:**
+```text
+Quero aprender JavaScript para fazer meu primeiro projeto de portfólio em 5 semanas. Começo segunda que vem. Posso estudar segunda, quarta e sexta, 2h por dia às 19h. Já sei HTML e CSS, mas nunca programei.
+```
+**Comportamento esperado:** O agente detalha os módulos pedagógicos, apresenta a tabela das semanas e aciona a ferramenta `WriteFile` para salvar o arquivo:
+```
+agente-estudos/planos/plano-de-estudos.csv
+```
+
+### Cenário 3: Importação no Google Agenda
+1. Abra o [Google Agenda](https://calendar.google.com/).
+2. Acesse **Configurações → Importar e exportar → Importar**.
+3. Selecione o arquivo `plano-de-estudos.csv` gerado e escolha o calendário desejado. Todas as sessões serão criadas automaticamente com horário de início, término e entregáveis detalhados na descrição.
+
+---
+
+## Executando os Testes Automatizados
+
+O projeto conta com uma suíte de testes unitários para validar a arquitetura do agente, restrição de ferramentas e injeção dinâmica de datas:
 
 ```bash
-cat ~/alura-imersao-dev/agente-estudos/planos/plano-de-estudos.csv
-cloudshell download ~/alura-imersao-dev/agente-estudos/planos/plano-de-estudos.csv
-```
-
-Com o arquivo no computador, importe no [Google Agenda](https://calendar.google.com/): **Configurações → Importar e exportar → Importar**.
-
-## 8. Evoluir o agente com o `agy`
-
-Abra uma segunda aba no Cloud Shell (`+`) e rode:
-
-```bash
-cd ~/alura-imersao-dev
-agy
-```
-
-**Revisão de código:**
-
-```text
-Revise o código do agente-estudos e liste os problemas por severidade antes de corrigir.
-```
-
-**Validar o resultado:**
-
-```text
-Leia agente-estudos/planos/plano-de-estudos.csv e confira se ele segue as regras do CSV em skills/plano-de-estudos/assets/plano_template.md: cabeçalho, formato de data e hora, aspas na descrição e nenhuma sessão fora dos dias combinados. Liste o que estiver errado.
-```
-
-**Corrigir um problema que você viu no teste:**
-
-```text
-No teste do ADK Web ou na validação, o agente [descreva o problema]. Descubra a causa e corrija.
-```
-
-**Nova skill:**
-
-```text
-Crie uma skill ADK chamada revisao-ativa, no mesmo padrão da plano-de-estudos, que recebe um material de estudo e gera flashcards e um quiz de 5 perguntas. Adicione-a ao agente.
-```
-
-Para testar, reinicie o ADK Web na primeira aba (`CTRL+C` e `uv run adk web --allow_origins="*"`).
-
-## 9. Versionar no GitHub
-
-1. Configure o seu nome e e-mail no git:
-
-```bash
-git config --global user.name "Seu Nome"
-git config --global user.email "seu-email@exemplo.com"
-```
-
-2. No `agy`, peça para preparar os commits:
-
-```text
-Confira se não há API Key em nenhum arquivo versionado e faça commits com mensagens descritivas das mudanças.
-```
-
-3. Saia do `agy` (`/exit`) e envie para o seu repositório no GitHub:
-
-```bash
-cd ~/alura-imersao-dev
-git remote set-url origin https://github.com/SEU_USUARIO/agente-estudos.git
-git push -u origin main
+uv run pytest tests/unit
 ```
 
 ---
 
-## 📚 Referências
+## 📚 Aprendizados Adquiridos
 
-- [Antigravity CLI](https://antigravity.google/)
-- [Google ADK: documentação](https://adk.dev/)
-- [ADK Skills](https://adk.dev/skills/) · [Especificação Agent Skills](https://agentskills.io/specification)
-- [ADK EnvironmentToolset](https://adk.dev/integrations/environment-toolset/)
-- [Google AI Studio: API Keys](https://aistudio.google.com/apikey)
+- A diferença entre simplesmente "conversar com uma LLM" e construir uma **solução de engenharia de software baseada em agentes com ferramentas delimitadas**.
+- Como aplicar o padrão de **Progressive Disclosure** em Agent Skills para economizar contexto e melhorar a aderência às instruções.
+- Práticas de **Sandboxing e Least Privilege**, evitando dar acesso irrestrito ao shell para IAs generativas.
+- Utilização de CLI modernas (`uv`, `agents-cli`, `agy`) para acelerar o desenvolvimento local.
+
+---
+
+## 📄 Licença
+
+Este projeto é de código aberto sob a licença [MIT](LICENSE).
+
+Agradecimentos à equipe da **[Alura](https://www.alura.com.br/)** pelo conteúdo inspirador da Imersão Dev na Era da IA!
