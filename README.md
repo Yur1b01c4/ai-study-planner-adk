@@ -90,7 +90,7 @@ O desenvolvimento deste projeto foi conduzido utilizando o **[Antigravity CLI (`
   ```powershell
   irm https://antigravity.google/cli/install.ps1 | iex
   ```
-- ** Windows (CMD):**
+- **Windows (CMD):**
    ```CMD
   curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd && install.cmd && del install.cmd
   ```
