@@ -58,7 +58,7 @@ Siga sempre as diretrizes e regras das skills disponíveis."""
 skill = load_skill_from_dir(SKILL_DIR)
 skill_toolset = SkillToolset(skills=[skill])
 file_toolset = FerramentasDeArquivo(
-    environment=LocalEnvironment(working_dir=str(PLANOS_DIR))
+    environment=LocalEnvironment(working_dir=PLANOS_DIR.resolve())
 )
 
 root_agent = Agent(
